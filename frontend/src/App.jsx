@@ -1,11 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import { Heart, MessageCircle, Share2, Image as ImageIcon, Smile, AlignLeft, Search, Bell, Moon, Home, ClipboardList, Globe, Trophy, MessageSquare } from 'lucide-react';
-
-// 🔴 DEPLOYMENT URL SETTING 🔴
-// 1. Agar local computer pe chalana hai toh: const API_URL = 'http://localhost:5005/api';
-// 2. Agar Vercel par daalna hai toh neeche wala Render URL use karein:
-const API_URL = 'https://aapka-backend-naam.onrender.com/api'; 
+import { Heart, MessageCircle, Share2, Image as ImageIcon, Smile, AlignLeft, Search, Bell, Moon, Plus, Home, ClipboardList, Globe, Trophy, MessageSquare } from 'lucide-react';
 
 // We keep these ONLY as fallbacks for the preview environment if your backend isn't running.
 const INITIAL_POSTS = [
@@ -36,6 +31,8 @@ const INITIAL_POSTS = [
     createdAt: new Date(Date.now() - 25200000).toISOString()
   }
 ];
+
+const API_URL = 'https://taskplanet-backend-api.onrender.com/api';
 
 export default function App() {
   // Application State
@@ -90,7 +87,7 @@ export default function App() {
         });
 
       } else {
-        // REAL BACKEND CALL: Signup (FIXED SYNTAX ERROR HERE)
+        // REAL BACKEND CALL: Signup
         const response = await axios.post(`${API_URL}/auth/signup`, {
           username: authForm.username,
           email: authForm.email,
@@ -121,6 +118,62 @@ export default function App() {
       setCurrentUser(mockUser);
     }
   };
+
+  if (!currentUser) {
+    return (
+      <div style={styles.authContainer}>
+        <div style={styles.authCard}>
+          <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>
+            {isLogin ? 'Welcome Back' : 'Create Account'}
+          </h2>
+          
+          {authError && <div style={styles.errorBanner}>{authError}</div>}
+
+          <form onSubmit={handleAuth} style={styles.form}>
+            {!isLogin && (
+              <input 
+                type="text" 
+                placeholder="Username" 
+                value={authForm.username}
+                onChange={(e) => setAuthForm({...authForm, username: e.target.value})}
+                style={styles.input}
+                required
+              />
+            )}
+            <input 
+              type="email" 
+              placeholder="Email Address" 
+              value={authForm.email}
+              onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
+              style={styles.input}
+              required
+            />
+            <input 
+              type="password" 
+              placeholder="Password (Min 6 chars)" 
+              value={authForm.password}
+              onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
+              style={styles.input}
+              required
+            />
+            <button type="submit" style={styles.primaryButton}>
+              {isLogin ? 'Login' : 'Sign Up'}
+            </button>
+          </form>
+
+          <p style={{ textAlign: 'center', marginTop: '15px', fontSize: '14px', color: '#666' }}>
+            {isLogin ? "Don't have an account? " : "Already have an account? "}
+            <span 
+              style={{ color: '#0066FF', cursor: 'pointer', fontWeight: 'bold' }}
+              onClick={() => { setIsLogin(!isLogin); setAuthError(''); }}
+            >
+              {isLogin ? 'Sign Up' : 'Login'}
+            </span>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleCreatePost = async (text, imageBase64) => {
     try {
@@ -209,62 +262,6 @@ export default function App() {
       }));
     }
   };
-
-  if (!currentUser) {
-    return (
-      <div style={styles.authContainer}>
-        <div style={styles.authCard}>
-          <h2 style={{ textAlign: 'center', marginBottom: '20px', color: '#333' }}>
-            {isLogin ? 'Welcome Back' : 'Create Account'}
-          </h2>
-          
-          {authError && <div style={styles.errorBanner}>{authError}</div>}
-
-          <form onSubmit={handleAuth} style={styles.form}>
-            {!isLogin && (
-              <input 
-                type="text" 
-                placeholder="Username" 
-                value={authForm.username}
-                onChange={(e) => setAuthForm({...authForm, username: e.target.value})}
-                style={styles.input}
-                required
-              />
-            )}
-            <input 
-              type="email" 
-              placeholder="Email Address" 
-              value={authForm.email}
-              onChange={(e) => setAuthForm({...authForm, email: e.target.value})}
-              style={styles.input}
-              required
-            />
-            <input 
-              type="password" 
-              placeholder="Password (Min 6 chars)" 
-              value={authForm.password}
-              onChange={(e) => setAuthForm({...authForm, password: e.target.value})}
-              style={styles.input}
-              required
-            />
-            <button type="submit" style={styles.primaryButton}>
-              {isLogin ? 'Login' : 'Sign Up'}
-            </button>
-          </form>
-
-          <p style={{ textAlign: 'center', marginTop: '15px', fontSize: '14px', color: '#666' }}>
-            {isLogin ? "Don't have an account? " : "Already have an account? "}
-            <span 
-              style={{ color: '#0066FF', cursor: 'pointer', fontWeight: 'bold' }}
-              onClick={() => { setIsLogin(!isLogin); setAuthError(''); }}
-            >
-              {isLogin ? 'Sign Up' : 'Login'}
-            </span>
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div style={styles.appWrapper}>
